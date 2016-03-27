@@ -21,8 +21,7 @@ If you have `wish` installed this script will show you a popup window. To get wi
 ## Options
 
 - `-L` sets the percentage at which the first popup shows. Default is 10
-- `-l` : The percentage at which the second popup shows
-     Default: half of the percentage given by `-L`
+- `-l` : The percentage at which the second popup shows. Default: half of the percentage given by `-L`
 
 - `-m` : The message to show to the User
 
