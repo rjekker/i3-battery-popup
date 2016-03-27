@@ -5,6 +5,7 @@ A script that shows messages to the user when the battery is almost empty. I wro
 This script regularly checks your battery charge and shows you a nice warning in a popup if you are about to completely drain your battery. It improves on other battery warning scripts [like this one](https://github.com/stagnation/i3-battery-warning) by:
 
 - Using a Tk-based popup (if you want) which you can configure to show on all workspaces. i3's nagbar doesn't do that.
+- Using the nagbar if you prefer that - or if you don't have Tk.
 - Doing what you want: you can tell it at which battery percentages you want to be warned. Currently it will try to show you 2 messages before the lower limit is reached.
 - Supporting multiple batteries. My laptop has 2 batteries, for example.
 - Using sane file locking with `flock`.

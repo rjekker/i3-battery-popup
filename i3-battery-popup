@@ -131,6 +131,8 @@ main (){
     echo "Current: $(get_battery_perc)%"
 
     LIMIT="${UPPER_LIMIT}"
+    # This will be set to "y" after first click
+    # So we know when to stop nagging
     POPUP_CLICKED=""
 
     while true; do
@@ -169,7 +171,6 @@ main (){
 
 LOCK_FILE="${HOME}/.battery_state.lock"
 (
-    echo "logfile: $LOGFILE"
     if [[ -n $LOGFILE ]]; then
         exec >>$LOGFILE 2>&1
     fi
