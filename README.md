@@ -18,9 +18,11 @@ This script regularly checks your battery charge and shows you a nice warning in
 
 If you have `wish` installed this script will show you a popup window. To get wish, you probably need to install `tk` on your Linux distribution.
 
-To make the popup sticky so it shows everywhere, add this to your i3 config:
+The nice thing is that we can make the popup window sticky; that doesn't work with i3-nagbar. To make the popup sticky so it shows everywhere, add this to your i3 config:
 
 `for_window [title="Battery Warning"] sticky enable`
+
+![screenshot](screenshot.png)
 
 ## Options
 
