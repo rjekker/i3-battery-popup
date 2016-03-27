@@ -37,7 +37,7 @@ error () {
     exit $2
 }
 
-while getopts 'L:l:m:t:Xn' opt; do
+while getopts 'L:l:m:t:F:n' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -56,6 +56,9 @@ while getopts 'L:l:m:t:Xn' opt; do
         t)
             [[ $OPTARG =~ ^[0-9]+[ms]?$ ]] || error "${opt}: ${OPTARG} is not a valid period" 2
             SLEEP_TIME="${OPTARG}"
+            ;;
+        F)
+            LOGFILE="${OPTARG}"
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -162,10 +165,16 @@ main (){
         echo "sleeping ${SLEEP_TIME}; current limit ${LIMIT}%; ${POPUP_CLICKED:+Popup was clicked}"
         sleep "${SLEEP_TIME}"
     done
-}  >&2
+} >&2
 
 LOCK_FILE="${HOME}/.battery_state.lock"
 (
+    echo "logfile: $LOGFILE"
+    if [[ -n $LOGFILE ]]; then
+        exec >>$LOGFILE 2>&1
+    fi
+
     flock -xn 200 || error "Cannot acquire lock ${LOCK_FILE}" 3
+
     main
 ) 200>"${LOCK_FILE}"
