@@ -26,7 +26,9 @@
 #      Give this a value in seconds: 5s, 10s, or in minutes: 5m                #
 #      Default: 5m                                                             #
 #                                                                              #
-# -n : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
+# -n : Use notify-send for message.                                           #
+#                                                                              #
+# -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
 #                                                                              #
 # By R-J Ekker, 2016                                                           #
 ################################################################################
@@ -37,7 +39,7 @@ error () {
     exit $2
 }
 
-while getopts 'L:l:m:t:F:n' opt; do
+while getopts 'L:l:m:t:F:i:nN' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -51,6 +53,12 @@ while getopts 'L:l:m:t:F:n' opt; do
             MESSAGE="${OPTARG}"
             ;;
         n)
+            USE_NOTIFY_SEND="y"
+            ;;
+        i)
+            NOTIFY_ICON="${OPTARG}"
+            ;;
+        N)
             DONT_USE_WISH="-n"
             ;;
         t)
@@ -72,7 +80,6 @@ done
 # This function returns an awk script
 # Which prints the battery percentage
 # It's an ugly way to include a nicely indented awk script here
-
 get_awk_source() {
     cat <<EOF
 BEGIN {
@@ -108,9 +115,26 @@ show_nagbar(){
     /usr/bin/i3-nagbar -m "${MESSAGE}"
 }
 
+show_notify(){
+    GNOME_ICON="/usr/share/icons/gnome/scalable/status/battery-low-symbolic.svg"
+    XFCE_ICON="/usr/share/icons/elementary-xfce/status/48/battery-low.png"
+    # try to find nice notify icon
+    if [[ -z $NOTIFY_ICON ]]; then
+        if [[ -f $GNOME_ICON ]]; then
+            NOTIFY_ICON="${GNOME_ICON}"
+        elif [[ -f $XFCE_ICON ]]; then
+            NOTIFY_ICON="${XFCE_ICON}"
+        fi
+    fi
+    [[ -n $NOTIFY_ICON ]] && NOTIFY_OPT="-i ${NOTIFY_ICON}"
+    notify-send -u critical ${NOTIFY_OPT} "${MESSAGE}"
+}
+
 show_message(){
     echo "showing warning" >&2
-    if [[ -z $DONT_USE_WISH ]] && which wish; then
+    if [[ -n $USE_NOTIFY_SEND ]] && which notify-send; then
+        show_notify
+    elif [[ -z $DONT_USE_WISH ]] && which wish; then
         show_popup
     else
         show_nagbar
