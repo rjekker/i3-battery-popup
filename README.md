@@ -30,7 +30,7 @@ The nice thing is that we can make the popup window sticky; that doesn't work wi
 
 Specify `-n` to use those nice pretty desktop notifications in the top right corner of your screen. I guess it depends on something like `libnotify` but I'm not really sure. Please correct me if I'm wrong.
 
-~[screenhot 2](screenshot2.png)
+![screenshot 2](screenshot2.png)
 
 ## Options
 
