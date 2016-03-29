@@ -26,7 +26,7 @@
 #      Give this a value in seconds: 5s, 10s, or in minutes: 5m                #
 #      Default: 5m                                                             #
 #                                                                              #
-# -n : Use notify-send for message.                                           #
+# -n : Use notify-send for message.                                            #
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
 #                                                                              #
@@ -107,12 +107,12 @@ get_battery_perc() {
 }
 
 show_popup() {
-    WISH_SCRIPT="wm state . withdrawn; tk_messageBox -icon warning -title \"Battery Warning\" -message \"${MESSAGE}\"; exit"
+    WISH_SCRIPT="wm state . withdrawn; tk_messageBox -icon warning -title \"Battery Warning\" -message \"${1}\"; exit"
     echo "$WISH_SCRIPT" | wish
 }
 
 show_nagbar(){
-    /usr/bin/i3-nagbar -m "${MESSAGE}"
+    /usr/bin/i3-nagbar -m "${1}"
 }
 
 show_notify(){
@@ -127,19 +127,18 @@ show_notify(){
         fi
     fi
     [[ -n $NOTIFY_ICON ]] && NOTIFY_OPT="-i ${NOTIFY_ICON}"
-    notify-send -u critical ${NOTIFY_OPT} "${MESSAGE}"
+    notify-send -u critical ${NOTIFY_OPT} "${1}"
 }
 
 show_message(){
-    echo "showing warning" >&2
     if [[ -n $USE_NOTIFY_SEND ]] && which notify-send; then
-        show_notify
+        show_notify "$1"
     elif [[ -z $DONT_USE_WISH ]] && which wish; then
-        show_popup
+        show_popup "$1"
     else
-        show_nagbar
+        show_nagbar "$1"
     fi
-}
+} >&2
 
 main (){
     # Setting defaults
@@ -167,7 +166,8 @@ main (){
 
         if is_battery_discharging; then
             if [[ $PERC -lt $LIMIT ]]; then
-                show_message
+                echo "showing warning" >&2
+                show_message "${MESSAGE}"
 
                 if [[ -z $POPUP_CLICKED ]]; then
                     # first click; set limit lower
