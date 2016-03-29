@@ -199,7 +199,7 @@ LOCK_FILE="${HOME}/.battery_state.lock"
         exec >>$LOGFILE 2>&1
     fi
 
-    flock -xn 200 || error "Cannot acquire lock ${LOCK_FILE}" 3
+    flock -xn 200 || { show_message "$(basename ${0}): cannot acquire lock ${LOCK_FILE}"; exit 3; }
 
     main
 ) 200>"${LOCK_FILE}"
