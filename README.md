@@ -16,6 +16,9 @@ This script regularly checks your battery charge and shows you a nice warning in
 - Download the script and make sure it's on your `PATH`
 - Call the script in your i3 config file: `exec --no-startup-id i3-battery-popup`
 
+# Installing on Arch Linux
+There's now a package on Arch Linux's AUR: https://aur.archlinux.org/packages/i3-battery-popup-git
+
 ## Showing the message everywhere
 
 If you have `wish` installed this script will show you a popup window. To get wish, you probably need to install `tk` on your Linux distribution.
