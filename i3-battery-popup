@@ -85,7 +85,7 @@ get_awk_source() {
 BEGIN {
     FS="=";
 }
-\$1 ~ /ENERGY_FULL_DESIGN$/ {
+\$1 ~ /ENERGY_FULL$/ {
     f += \$2;
 }
 \$1 ~ /ENERGY_NOW\$/ {
