@@ -91,6 +91,12 @@ BEGIN {
 \$1 ~ /ENERGY_NOW\$/ {
     n += \$2;
 }
+\$1 ~ /CHARGE_FULL$/ {
+    f += \$2;
+}
+\$1 ~ /CHARGE_NOW\$/ {
+    n += \$2;
+}
 END {
     print int(100*n/f);
 }
