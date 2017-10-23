@@ -118,7 +118,7 @@ show_popup() {
 }
 
 show_nagbar(){
-    /usr/bin/i3-nagbar -m "${1}"
+    i3-msg "exec i3-nagbar -m \"${1}\""
 }
 
 show_notify(){
