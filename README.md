@@ -10,6 +10,7 @@ This script regularly checks your battery charge and shows you a nice warning in
 - Doing what you want: you can tell it at which battery percentages you want to be warned. Currently it will try to show you 2 messages before the lower limit is reached.
 - Supporting multiple batteries. My laptop has 2 batteries, for example.
 - Using sane file locking with `flock`.
+- Shutdown automatically if user doesn't response on popup and doesn't charge at critical battery level.
 
 # How to use it
 
