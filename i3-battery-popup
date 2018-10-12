@@ -205,7 +205,7 @@ LOCK_FILE="${HOME}/.i3-battery-popup.lock"
 release_lock() {
     # This shouldn't be necessary but it seems
     # the lock doesn't release on i3 exit
-    flock --unlock 200
+    flock --unlock 9
 }
 
 
@@ -214,8 +214,8 @@ release_lock() {
         exec >>"$LOGFILE" 2>&1
     fi
 
-    flock -xn 200 || { show_message "$(basename ${0}): cannot acquire lock ${LOCK_FILE}"; exit 3; }
+    flock -xn 9 || { show_message "$(basename ${0}): cannot acquire lock ${LOCK_FILE}"; exit 3; }
     trap release_lock EXIT
 
-    main 200>&-
-) 200>"${LOCK_FILE}"
+    main
+) 9>"${LOCK_FILE}"
