@@ -39,7 +39,7 @@ error () {
     exit $2
 }
 
-while getopts 'L:l:m:t:F:i:nN' opt; do
+while getopts 'L:l:m:t:s:F:i:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -65,7 +65,13 @@ while getopts 'L:l:m:t:F:i:nN' opt; do
             [[ $OPTARG =~ ^[0-9]+[ms]?$ ]] || error "${opt}: ${OPTARG} is not a valid period" 2
             SLEEP_TIME="${OPTARG}"
             ;;
+        D)
+            # Print some extra info
+            DEBUG="y"
+            ;;
         F)
+            # Redirect debugging info to logfile
+            # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
             ;;
         :)
@@ -146,6 +152,10 @@ show_message(){
     fi
 } >&2
 
+debug(){
+    [[ -n $DEBUG ]] && echo "$1"
+}
+
 main (){
     # Setting defaults
     UPPER_LIMIT="${UPPER_LIMIT:-10}"
@@ -156,8 +166,8 @@ main (){
 
     BATTERIES=/sys/class/power_supply/BAT*/uevent
 
-    echo "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
-    echo "Current: $(get_battery_perc)%"
+    debug "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
+    debug "Current: $(get_battery_perc)%"
 
     LIMIT="${UPPER_LIMIT}"
     # This will be set to "y" after first click
@@ -165,14 +175,14 @@ main (){
     POPUP_CLICKED=""
 
     while true; do
-        echo -n "Checking.. "
+        debug "Checking.. "
 
         PERC=$(get_battery_perc)
-        echo "got ${PERC}%"
+        debug "got ${PERC}%"
 
         if is_battery_discharging; then
             if [[ $PERC -lt $LIMIT ]]; then
-                echo "showing warning" >&2
+                debug "showing warning"
                 show_message "${MESSAGE}"
 
                 if [[ -z $POPUP_CLICKED ]]; then
@@ -185,7 +195,7 @@ main (){
                 fi
             fi
         else
-            echo "Battery Charging"
+            debug "Battery Charging"
             # restart messages, reset limits
             POPUP_CLICKED=""
             if [[ $PERC -gt $UPPER_LIMIT ]]; then
@@ -194,10 +204,10 @@ main (){
                 LIMIT=${LOWER_LIMIT}
             fi
         fi
-        echo "sleeping ${SLEEP_TIME}; current limit ${LIMIT}%; ${POPUP_CLICKED:+Popup was clicked}"
+        debug "sleeping ${SLEEP_TIME}; current limit ${LIMIT}%; ${POPUP_CLICKED:+Popup was clicked}"
         sleep "${SLEEP_TIME}"
     done
-} >&2
+}
 
 
 LOCK_FILE="${HOME}/.i3-battery-popup.lock"
