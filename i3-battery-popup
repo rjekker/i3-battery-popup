@@ -227,5 +227,5 @@ release_lock() {
     flock -xn 200 || { show_message "$(basename ${0}): cannot acquire lock ${LOCK_FILE}"; exit 3; }
     trap release_lock EXIT
 
-    main 200>&-
+    main
 ) 200>"${LOCK_FILE}"
