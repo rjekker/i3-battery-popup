@@ -110,8 +110,8 @@ EOF
 }
 
 is_battery_discharging() {
-    cat $BATTERIES | grep Charging && return 1
-    return 0
+    cat $BATTERIES | grep STATUS=Discharging && return 0
+    return 1
 } >/dev/null
 
 get_battery_perc() {
@@ -181,6 +181,8 @@ main (){
         debug "got ${PERC}%"
 
         if is_battery_discharging; then
+            debug "Battery is discharging"
+
             if [[ $PERC -lt $LIMIT ]]; then
                 debug "showing warning"
                 show_message "${MESSAGE}"
@@ -195,7 +197,6 @@ main (){
                 fi
             fi
         else
-            debug "Battery Charging"
             # restart messages, reset limits
             POPUP_CLICKED=""
             if [[ $PERC -gt $UPPER_LIMIT ]]; then
