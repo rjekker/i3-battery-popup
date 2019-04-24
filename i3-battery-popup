@@ -39,7 +39,7 @@ error () {
     exit $2
 }
 
-while getopts 'L:l:m:t:s:F:i:nND' opt; do
+while getopts 'T:s:L:l:m:t:s:F:i:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -73,6 +73,10 @@ while getopts 'L:l:m:t:s:F:i:nND' opt; do
             # Redirect debugging info to logfile
             # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
+            ;;
+            
+        s)
+            SOUND_TO_PLAY="${OPTARG}"
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -142,7 +146,14 @@ show_notify(){
     notify-send -u critical ${NOTIFY_OPT} "${1}"
 }
 
+show_sound(){
+    if [[ -n $SOUND_TO_PLAY ]]; then
+        aplay $SOUND_TO_PLAY
+    fi
+}
+
 show_message(){
+    show_sound&
     if [[ -n $USE_NOTIFY_SEND ]] && which notify-send; then
         show_notify "$1"
     elif [[ -z $DONT_USE_WISH ]] && which wish; then
@@ -163,7 +174,6 @@ main (){
     LOWER_LIMIT=${LOWER_LIMIT:-$UPPER_HALF}
     MESSAGE="${MESSAGE:-Warning: Battery is getting low}"
     SLEEP_TIME="${SLEEP_TIME:-5m}"
-
     BATTERIES=/sys/class/power_supply/BAT*/uevent
 
     debug "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
