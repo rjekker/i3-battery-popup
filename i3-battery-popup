@@ -39,7 +39,7 @@ error () {
     exit $2
 }
 
-while getopts 'T:s:L:l:m:t:s:F:i:nND' opt; do
+while getopts 's:L:l:m:t:s:F:i:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
