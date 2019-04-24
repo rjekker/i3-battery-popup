@@ -149,7 +149,7 @@ show_notify(){
 
 show_sound(){
     if [[ -n $SOUND_TO_PLAY ]]; then
-        aplay $SOUND_TO_PLAY
+        paplay $SOUND_TO_PLAY
     fi
 }
 
