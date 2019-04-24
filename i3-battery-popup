@@ -76,6 +76,7 @@ while getopts 'T:s:L:l:m:t:s:F:i:nND' opt; do
             ;;
             
         s)
+            [ -f $OPTARG ] || error "${opt}: ${OPTARG}: no such file" 2
             SOUND_TO_PLAY="${OPTARG}"
             ;;
         :)
