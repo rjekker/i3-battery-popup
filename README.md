@@ -52,9 +52,13 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 
 - `-N` : Don't use Tcl/Tk dialog. Use i3-nagbar.
 
-- `-s` : Play a sound with `paplay` when notifying. Default: no sound.
+- `-s` : Play a sound with `paplay` when notifying.
       Takes a path to a sound as argument. The file must exist.
-
+      Default: no sound.
+      
+- `-v` : Specifies the percentage of the volume of the sound played with `-s` option.
+      This value must be an integer greater than `0` and smaller than `100`.
+      Default: `100`
 
 # Disclaimer
 
