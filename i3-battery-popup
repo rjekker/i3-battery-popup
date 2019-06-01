@@ -26,6 +26,11 @@
 #      Give this a value in seconds: 5s, 10s, or in minutes: 5m                #
 #      Default: 5m                                                             #
 #                                                                              #
+# -s : Play a sound file. This uses the command 'aplay' and depends on         #
+#      a working pulseaudio installation                                       #
+#                                                                              #
+# -v : The volume to play audio at. Expects a number 0-100.                    #
+#                                                                              #
 # -n : Use notify-send for message.                                            #
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
@@ -65,16 +70,6 @@ while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
             [[ $OPTARG =~ ^[0-9]+[ms]?$ ]] || error "${opt}: ${OPTARG} is not a valid period" 2
             SLEEP_TIME="${OPTARG}"
             ;;
-        D)
-            # Print some extra info
-            DEBUG="y"
-            ;;
-        F)
-            # Redirect debugging info to logfile
-            # if -D not specified this will log nothing
-            LOGFILE="${OPTARG}"
-            ;;
-            
         s)
             [ -f $OPTARG ] || error "${opt}: ${OPTARG}: no such file" 2
             SOUND_TO_PLAY="${OPTARG}"
@@ -83,6 +78,15 @@ while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
             SOUND_VOLUME_PERC="${OPTARG}"
             [[ $OPTARG -ge 0 && $OPTARG -le 100 ]] || error "${opt}: ${OPTARG}: not an integer between 0 and 100" 2
             SOUND_VOLUME=$(( $OPTARG * 65536 / 100 ))
+            ;;
+        D)
+            # Print some extra info
+            DEBUG="y"
+            ;;
+        F)
+            # Redirect debugging info to logfile
+            # if -D not specified this will log nothing
+            LOGFILE="${OPTARG}"
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -152,14 +156,14 @@ show_notify(){
     notify-send -u critical ${NOTIFY_OPT} "${1}"
 }
 
-show_sound(){
+play_sound(){
     if [[ -n $SOUND_TO_PLAY ]]; then
         paplay $SOUND_TO_PLAY --volume $SOUND_VOLUME
     fi
 }
 
 show_message(){
-    show_sound &
+    play_sound &
     if [[ -n $USE_NOTIFY_SEND ]] && which notify-send; then
         show_notify "$1"
     elif [[ -z $DONT_USE_WISH ]] && which wish; then
