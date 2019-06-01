@@ -127,12 +127,12 @@ EOF
 }
 
 is_battery_discharging() {
-    grep STATUS=Discharging ${BATTERIES[@]} && return 0
+    grep STATUS=Discharging "${BATTERIES[@]}" && return 0
     return 1
 } >/dev/null
 
 get_battery_perc() {
-    awk -f <(get_awk_source) ${BATTERIES[@]}
+    awk -f <(get_awk_source) "${BATTERIES[@]}"
 }
 
 show_popup() {
