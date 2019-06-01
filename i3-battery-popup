@@ -127,12 +127,12 @@ EOF
 }
 
 is_battery_discharging() {
-    grep STATUS=Discharging "$BATTERIES" && return 0
+    grep STATUS=Discharging ${BATTERIES[@]} && return 0
     return 1
 } >/dev/null
 
 get_battery_perc() {
-    awk -f <(get_awk_source) "$BATTERIES"
+    awk -f <(get_awk_source) ${BATTERIES[@]}
 }
 
 show_popup() {
@@ -187,8 +187,8 @@ main (){
     LOWER_LIMIT=${LOWER_LIMIT:-$UPPER_HALF}
     MESSAGE="${MESSAGE:-Warning: Battery is getting low}"
     SLEEP_TIME="${SLEEP_TIME:-5m}"
-    BATT_ARRAY=( /sys/class/power_supply/BAT*/uevent )
-    BATTERIES="${BATT_ARRAY[*]}"
+    # Note: BATTERIES is an array
+    BATTERIES=( /sys/class/power_supply/BAT*/uevent )
     SOUND_VOLUME="${SOUND_VOLUME:-65536}"
 
     debug "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
