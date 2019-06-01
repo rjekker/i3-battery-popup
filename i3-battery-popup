@@ -39,7 +39,7 @@ error () {
     exit $2
 }
 
-while getopts 'L:l:m:t:s:F:i:nND' opt; do
+while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -73,6 +73,16 @@ while getopts 'L:l:m:t:s:F:i:nND' opt; do
             # Redirect debugging info to logfile
             # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
+            ;;
+            
+        s)
+            [ -f $OPTARG ] || error "${opt}: ${OPTARG}: no such file" 2
+            SOUND_TO_PLAY="${OPTARG}"
+            ;;
+        v)
+            SOUND_VOLUME_PERC="${OPTARG}"
+            [[ $OPTARG -ge 0 && $OPTARG -le 100 ]] || error "${opt}: ${OPTARG}: not an integer between 0 and 100" 2
+            SOUND_VOLUME=$(( $OPTARG * 65536 / 100 ))
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -142,7 +152,14 @@ show_notify(){
     notify-send -u critical ${NOTIFY_OPT} "${1}"
 }
 
+show_sound(){
+    if [[ -n $SOUND_TO_PLAY ]]; then
+        paplay $SOUND_TO_PLAY --volume $SOUND_VOLUME
+    fi
+}
+
 show_message(){
+    show_sound &
     if [[ -n $USE_NOTIFY_SEND ]] && which notify-send; then
         show_notify "$1"
     elif [[ -z $DONT_USE_WISH ]] && which wish; then
@@ -163,11 +180,12 @@ main (){
     LOWER_LIMIT=${LOWER_LIMIT:-$UPPER_HALF}
     MESSAGE="${MESSAGE:-Warning: Battery is getting low}"
     SLEEP_TIME="${SLEEP_TIME:-5m}"
-
     BATTERIES=/sys/class/power_supply/BAT*/uevent
+    SOUND_VOLUME="${SOUND_VOLUME:-65536}"
 
     debug "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
     debug "Current: $(get_battery_perc)%"
+    [ -n $SOUND_TO_PLAY ] && debug "Playing: \"${SOUND_TO_PLAY}\", Volume: ${SOUND_VOLUME_PERC}%"
 
     LIMIT="${UPPER_LIMIT}"
     # This will be set to "y" after first click
