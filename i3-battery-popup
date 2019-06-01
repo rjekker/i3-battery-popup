@@ -36,12 +36,15 @@
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
 #                                                                              #
 # By R-J Ekker, 2016                                                           #
+# Thanks to:                                                                   #
+# - Louis-Jacob Lebel (https://github.com/lebel-louisjacob)                    #
+# - Martin Jablečník (https://github.com/Applemann)                            #
 ################################################################################
 
 error () {
-    echo $1 >&2
+    echo "$1" >&2
     echo "Exiting" >&2
-    exit $2
+    exit "$2"
 }
 
 while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
@@ -71,13 +74,13 @@ while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
             SLEEP_TIME="${OPTARG}"
             ;;
         s)
-            [ -f $OPTARG ] || error "${opt}: ${OPTARG}: no such file" 2
+            [ -f "$OPTARG" ] || error "${opt}: ${OPTARG}: no such file" 2
             SOUND_TO_PLAY="${OPTARG}"
             ;;
         v)
             SOUND_VOLUME_PERC="${OPTARG}"
             [[ $OPTARG -ge 0 && $OPTARG -le 100 ]] || error "${opt}: ${OPTARG}: not an integer between 0 and 100" 2
-            SOUND_VOLUME=$(( $OPTARG * 65536 / 100 ))
+            SOUND_VOLUME=$(( "$OPTARG" * 65536 / 100 ))
             ;;
         D)
             # Print some extra info
@@ -124,12 +127,12 @@ EOF
 }
 
 is_battery_discharging() {
-    cat $BATTERIES | grep STATUS=Discharging && return 0
+    grep STATUS=Discharging "$BATTERIES" && return 0
     return 1
 } >/dev/null
 
 get_battery_perc() {
-    cat $BATTERIES | awk -f <(get_awk_source)
+    awk -f <(get_awk_source) "$BATTERIES"
 }
 
 show_popup() {
@@ -153,12 +156,12 @@ show_notify(){
         fi
     fi
     [[ -n $NOTIFY_ICON ]] && NOTIFY_OPT="-i ${NOTIFY_ICON}"
-    notify-send -u critical ${NOTIFY_OPT} "${1}"
+    notify-send -u critical "${NOTIFY_OPT}" "${1}"
 }
 
 play_sound(){
     if [[ -n $SOUND_TO_PLAY ]]; then
-        paplay $SOUND_TO_PLAY --volume $SOUND_VOLUME
+        paplay "$SOUND_TO_PLAY" --volume $SOUND_VOLUME
     fi
 }
 
@@ -180,16 +183,17 @@ debug(){
 main (){
     # Setting defaults
     UPPER_LIMIT="${UPPER_LIMIT:-10}"
-    UPPER_HALF=$(( $UPPER_LIMIT / 2 ))
+    UPPER_HALF=$(( UPPER_LIMIT / 2 ))
     LOWER_LIMIT=${LOWER_LIMIT:-$UPPER_HALF}
     MESSAGE="${MESSAGE:-Warning: Battery is getting low}"
     SLEEP_TIME="${SLEEP_TIME:-5m}"
-    BATTERIES=/sys/class/power_supply/BAT*/uevent
+    BATT_ARRAY=( /sys/class/power_supply/BAT*/uevent )
+    BATTERIES="${BATT_ARRAY[*]}"
     SOUND_VOLUME="${SOUND_VOLUME:-65536}"
 
     debug "Upper ${UPPER_LIMIT}; Lower ${LOWER_LIMIT}; sleep ${SLEEP_TIME}"
     debug "Current: $(get_battery_perc)%"
-    [ -n $SOUND_TO_PLAY ] && debug "Playing: \"${SOUND_TO_PLAY}\", Volume: ${SOUND_VOLUME_PERC}%"
+    [[ -n $SOUND_TO_PLAY ]] && debug "Playing: \"${SOUND_TO_PLAY}\", Volume: ${SOUND_VOLUME_PERC}%"
 
     LIMIT="${UPPER_LIMIT}"
     # This will be set to "y" after first click
