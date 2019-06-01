@@ -59,7 +59,3 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 - `-v` : Specifies the percentage of the volume of the sound played with `-s` option.
       This value must be an integer greater than `0` and smaller than `100`.
       Default: `100`
-
-# Disclaimer
-
-I have only just started using this script, so it is largely untested.
