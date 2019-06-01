@@ -237,22 +237,8 @@ main (){
 }
 
 
-LOCK_FILE="${HOME}/.i3-battery-popup.lock"
+if [[ -n $LOGFILE ]]; then
+    exec >>"$LOGFILE" 2>&1
+fi
 
-release_lock() {
-    # This shouldn't be necessary but it seems
-    # the lock doesn't release on i3 exit
-    flock --unlock 200
-}
-
-
-(
-    if [[ -n $LOGFILE ]]; then
-        exec >>"$LOGFILE" 2>&1
-    fi
-
-    flock -xn 200 || { show_message "$(basename ${0}): cannot acquire lock ${LOCK_FILE}"; exit 3; }
-    trap release_lock EXIT
-
-    main
-) 200>"${LOCK_FILE}"
+main
