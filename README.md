@@ -7,9 +7,9 @@ This script regularly checks your battery charge and shows you a nice warning in
 - Using a Tk-based popup (if you want) which you can configure to show on all workspaces. i3's nagbar doesn't do that.
 - Or using a nice `notify-send` desktop notification
 - Using the nagbar if you prefer that - or if you don't have Tk.
+- Optionally playing a sound to warn you when the battery gets low.
 - Doing what you want: you can tell it at which battery percentages you want to be warned. Currently it will try to show you 2 messages before the lower limit is reached.
 - Supporting multiple batteries. My laptop has 2 batteries, for example.
-- Using sane file locking with `flock`.
 
 # How to use it
 
