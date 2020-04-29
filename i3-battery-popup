@@ -35,6 +35,9 @@
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
 #                                                                              #
+# -I : Interval that the notification will appear                              #
+#      Overrides the -l parameter                                              #
+#                                                                              #
 # By R-J Ekker, 2016                                                           #
 # Thanks to:                                                                   #
 # - Louis-Jacob Lebel (https://github.com/lebel-louisjacob)                    #
@@ -47,7 +50,7 @@ error () {
     exit "$2"
 }
 
-while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
+while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -65,6 +68,9 @@ while getopts 's:v:L:l:m:t:s:F:i:nND' opt; do
             ;;
         i)
             NOTIFY_ICON="${OPTARG}"
+            ;;
+        I)
+            INTERVAL="${OPTARG}"
             ;;
         N)
             DONT_USE_WISH="-n"
@@ -209,23 +215,27 @@ main (){
         if is_battery_discharging; then
             debug "Battery is discharging"
 
-            if [[ $PERC -lt $LIMIT ]]; then
+            if [[ $PERC -le $LIMIT ]]; then
                 debug "showing warning"
                 show_message "${MESSAGE}"
 
-                if [[ -z $POPUP_CLICKED ]]; then
-                    # first click; set limit lower
-                    POPUP_CLICKED="y"
-                    LIMIT=${LOWER_LIMIT}
+                if [[ -z $INTERVAL ]]; then
+                   if [[ -z $POPUP_CLICKED ]]; then
+                      # first click; set limit lower
+                      POPUP_CLICKED="y"
+                      LIMIT=${LOWER_LIMIT}
+                   else
+                      # We clicked twice; No more popups
+                      LIMIT=0
+                   fi
                 else
-                    # We clicked twice; No more popups
-                    LIMIT=0
+                   LIMIT=$[$PERC - $INTERVAL]
                 fi
             fi
         else
             # restart messages, reset limits
             POPUP_CLICKED=""
-            if [[ $PERC -gt $UPPER_LIMIT ]]; then
+            if [[ $PERC -gt $UPPER_LIMIT ]] || ! [[ -z $INTERVAL ]]; then
                 LIMIT=${UPPER_LIMIT}
             else
                 LIMIT=${LOWER_LIMIT}
