@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 ################################################################################
 # A script that shows a battery warning on i3wm                                #
