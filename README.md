@@ -38,8 +38,12 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 ## Options
 
 - `-L` : Sets the percentage at which the first popup shows. Default is 10
-- `-l` : The percentage at which the second popup shows. Default: half of the percentage given by `-L`
-- `-I` : Interval in minutes to re-send message, disables (-l)
+- `-l` : The percentage at which the second popup shows. Default: half of the percentage given by `-L`, not compatible with `-I`
+- `-I` : Specify on how many battery % change to re-send message,
+      Note: the check is run every `-t` (default `5m`) so at minimum we will wait  `5m` before sending any new message, set `-t` lower for more precise interval notifications
+      Disables the `-l` parameter
+      Example: `-I 2%` will send notfication every 2% battery change after `-L` was hit
+      Default: disabled
 
 - `-m` : The message to show to the User
 

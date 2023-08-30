@@ -20,8 +20,9 @@
 # -l : The percentage at which the second popup shows                          #
 #      Default: half of the percentage given by -L                             #
 #                                                                              #
-# -I : Interval that the notification will appear                              #
-#      Overrides the -l parameter                                              #
+# -I : Interval that the notification will appear on every % battery change    #
+#      i.E.: interval of 2 means on every 2% change send a notification        #
+#      Disables the -l parameter                                               #
 #                                                                              #
 # -m : The message to show to the User                                         #
 #                                                                              #
@@ -74,7 +75,7 @@ while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
             NOTIFY_ICON="${OPTARG}"
             ;;
         I)
-            INTERVAL="${OPTARG}"
+            INTERVAL="${OPTARG#%}"
             ;;
         N)
             DONT_USE_WISH="-n"
