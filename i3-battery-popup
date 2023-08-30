@@ -157,7 +157,7 @@ show_popup() {
 }
 
 show_nagbar(){
-    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f "${FONT}"}"
+    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f '"${FONT}"'}"
 }
 
 show_notify(){
