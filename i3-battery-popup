@@ -59,12 +59,12 @@ error () {
 while getopts 's:v:L:l:m:t:s:F:i:I:f:nND' opt; do
     case $opt in
         L)
-            [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
-            UPPER_LIMIT="${OPTARG#%}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            UPPER_LIMIT="${OPTARG%\%}"
             ;;
         l)
-            [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
-            LOWER_LIMIT="${OPTARG#%}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            LOWER_LIMIT="${OPTARG%\%}"
             ;;
         m)
             MESSAGE="${OPTARG}"
@@ -76,7 +76,8 @@ while getopts 's:v:L:l:m:t:s:F:i:I:f:nND' opt; do
             NOTIFY_ICON="${OPTARG}"
             ;;
         I)
-            INTERVAL="${OPTARG#%}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            INTERVAL="${OPTARG%\%}"
             ;;
         N)
             DONT_USE_WISH="-n"
