@@ -104,7 +104,7 @@ while getopts 's:v:L:l:m:t:s:F:i:I:f:nND' opt; do
             # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
             ;;
-	f)
+        f)
             FONT="${OPTARG}"
             ;;
         :)
@@ -157,7 +157,7 @@ show_popup() {
 }
 
 show_nagbar(){
-    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f '"${FONT}"'}"
+    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f "'${FONT}'"}"
 }
 
 show_notify(){
@@ -172,6 +172,7 @@ show_notify(){
         fi
     fi
     [[ -n $NOTIFY_ICON ]] && NOTIFY_OPT="-i ${NOTIFY_ICON}"
+    # shellcheck disable=SC2086
     notify-send -u critical "${1}" ${NOTIFY_OPT}
 }
 
