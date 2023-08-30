@@ -56,6 +56,9 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 - `-i` : Specify the icon to use with `-n`
 
 - `-N` : Don't use Tcl/Tk dialog. Use i3-nagbar.
+- `-f` : Font to use for i3-nagbar
+      Fonts are specified same as in i3 (https://i3wm.org/docs/userguide.html#fonts)
+      For example: `pango:DejaVu Sans Mono 10`
 
 - `-s` : Play a sound with `paplay` when notifying.
       Takes a path to a sound as argument. The file must exist.

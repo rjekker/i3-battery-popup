@@ -38,6 +38,7 @@
 # -n : Use notify-send for message.                                            #
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
+# -f : Font to use for i3-nagbar (e.g.: pango:Dejavu Sans Mono 10)             #
 #                                                                              #
 # -D : Enable debug output                                                     #
 #                                                                              #
@@ -55,7 +56,7 @@ error () {
     exit "$2"
 }
 
-while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
+while getopts 's:v:L:l:m:t:s:F:i:I:f:nND' opt; do
     case $opt in
         L)
             [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
@@ -101,6 +102,9 @@ while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
             # Redirect debugging info to logfile
             # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
+            ;;
+	f)
+            FONT="${OPTARG}"
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -152,7 +156,7 @@ show_popup() {
 }
 
 show_nagbar(){
-    i3-msg "exec i3-nagbar -m \"${1}\""
+    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f "${FONT}"}"
 }
 
 show_notify(){
