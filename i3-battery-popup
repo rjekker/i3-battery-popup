@@ -20,6 +20,9 @@
 # -l : The percentage at which the second popup shows                          #
 #      Default: half of the percentage given by -L                             #
 #                                                                              #
+# -I : Interval that the notification will appear                              #
+#      Overrides the -l parameter                                              #
+#                                                                              #
 # -m : The message to show to the User                                         #
 #                                                                              #
 # -t : The time interval the script waits before checking the battery again.   #
@@ -35,8 +38,9 @@
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
 #                                                                              #
-# -I : Interval that the notification will appear                              #
-#      Overrides the -l parameter                                              #
+# -D : Enable debug output                                                     #
+#                                                                              #
+# -F : Specifies the logfile to write output to                                #
 #                                                                              #
 # By R-J Ekker, 2016                                                           #
 # Thanks to:                                                                   #
@@ -229,13 +233,13 @@ main (){
                       LIMIT=0
                    fi
                 else
-                   LIMIT=$[$PERC - $INTERVAL]
+                   LIMIT=$(( PERC - INTERVAL ))
                 fi
             fi
         else
             # restart messages, reset limits
             POPUP_CLICKED=""
-            if [[ $PERC -gt $UPPER_LIMIT ]] || ! [[ -z $INTERVAL ]]; then
+            if [[ $PERC -gt $UPPER_LIMIT ]] || [[ -n $INTERVAL ]]; then
                 LIMIT=${UPPER_LIMIT}
             else
                 LIMIT=${LOWER_LIMIT}

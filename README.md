@@ -37,8 +37,9 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 
 ## Options
 
-- `-L` sets the percentage at which the first popup shows. Default is 10
+- `-L` : Sets the percentage at which the first popup shows. Default is 10
 - `-l` : The percentage at which the second popup shows. Default: half of the percentage given by `-L`
+- `-I` : Interval in minutes to re-send message, disables (-l)
 
 - `-m` : The message to show to the User
 
@@ -59,3 +60,6 @@ Specify `-n` to use those nice pretty desktop notifications in the top right cor
 - `-v` : Specifies the percentage of the volume of the sound played with `-s` option.
       This value must be an integer greater than `0` and smaller than `100`.
       Default: `100`
+
+- `-D` : Enable debug output
+- `-F` : Specifies the logfile to write to
