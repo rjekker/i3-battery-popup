@@ -20,6 +20,10 @@
 # -l : The percentage at which the second popup shows                          #
 #      Default: half of the percentage given by -L                             #
 #                                                                              #
+# -I : Interval that the notification will appear on every % battery change    #
+#      i.E.: interval of 2 means on every 2% change send a notification        #
+#      Disables the -l parameter                                               #
+#                                                                              #
 # -m : The message to show to the User                                         #
 #                                                                              #
 # -t : The time interval the script waits before checking the battery again.   #
@@ -34,9 +38,11 @@
 # -n : Use notify-send for message.                                            #
 #                                                                              #
 # -N : Don't use Tcl/Tk dialog. Use i3-nagbar.                                 #
+# -f : Font to use for i3-nagbar (e.g.: pango:Dejavu Sans Mono 10)             #
 #                                                                              #
-# -I : Interval that the notification will appear                              #
-#      Overrides the -l parameter                                              #
+# -D : Enable debug output                                                     #
+#                                                                              #
+# -F : Specifies the logfile to write output to                                #
 #                                                                              #
 # By R-J Ekker, 2016                                                           #
 # Thanks to:                                                                   #
@@ -50,15 +56,15 @@ error () {
     exit "$2"
 }
 
-while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
+while getopts 's:v:L:l:m:t:s:F:i:I:f:nND' opt; do
     case $opt in
         L)
-            [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
-            UPPER_LIMIT="${OPTARG}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            UPPER_LIMIT="${OPTARG%\%}"
             ;;
         l)
-            [[ $OPTARG =~ ^[0-9]+$ ]] || error "${opt}: ${OPTARG} is not a number" 2
-            LOWER_LIMIT="${OPTARG}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            LOWER_LIMIT="${OPTARG%\%}"
             ;;
         m)
             MESSAGE="${OPTARG}"
@@ -70,7 +76,8 @@ while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
             NOTIFY_ICON="${OPTARG}"
             ;;
         I)
-            INTERVAL="${OPTARG}"
+            [[ $OPTARG =~ ^[0-9]+%?$ ]] || error "${opt}: ${OPTARG} is not a number" 2
+            INTERVAL="${OPTARG%\%}"
             ;;
         N)
             DONT_USE_WISH="-n"
@@ -96,6 +103,9 @@ while getopts 's:v:L:l:m:t:s:F:i:I:nND' opt; do
             # Redirect debugging info to logfile
             # if -D not specified this will log nothing
             LOGFILE="${OPTARG}"
+            ;;
+        f)
+            FONT="${OPTARG}"
             ;;
         :)
             error "Option -$OPTARG requires an argument." 2
@@ -147,7 +157,7 @@ show_popup() {
 }
 
 show_nagbar(){
-    i3-msg "exec i3-nagbar -m \"${1}\""
+    i3-msg "exec i3-nagbar -m \"${1}\" ${FONT:+-f "'${FONT}'"}"
 }
 
 show_notify(){
@@ -162,6 +172,7 @@ show_notify(){
         fi
     fi
     [[ -n $NOTIFY_ICON ]] && NOTIFY_OPT="-i ${NOTIFY_ICON}"
+    # shellcheck disable=SC2086
     notify-send -u critical "${1}" ${NOTIFY_OPT}
 }
 
@@ -229,13 +240,13 @@ main (){
                       LIMIT=0
                    fi
                 else
-                   LIMIT=$[$PERC - $INTERVAL]
+                   LIMIT=$(( PERC - INTERVAL ))
                 fi
             fi
         else
             # restart messages, reset limits
             POPUP_CLICKED=""
-            if [[ $PERC -gt $UPPER_LIMIT ]] || ! [[ -z $INTERVAL ]]; then
+            if [[ $PERC -gt $UPPER_LIMIT ]] || [[ -n $INTERVAL ]]; then
                 LIMIT=${UPPER_LIMIT}
             else
                 LIMIT=${LOWER_LIMIT}
