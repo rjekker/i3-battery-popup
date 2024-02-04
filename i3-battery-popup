@@ -205,9 +205,9 @@ main (){
     MESSAGE="${MESSAGE:-Warning: Battery is getting low}"
     SLEEP_TIME="${SLEEP_TIME:-5m}"
     # Note: BATTERIES is an array
-    if ls /sys/class/power_supply/BAT*/uevent 1> /dev/null 2>&1; then
-    BATTERIES=( /sys/class/power_supply/BAT*/uevent )
-        elif ls /sys/class/power_supply/CMB*/uevent 1> /dev/null 2>&1; then
+    if ls /sys/class/power_supply/BAT*/uevent > /dev/null 2>&1; then
+        BATTERIES=( /sys/class/power_supply/BAT*/uevent )
+    elif ls /sys/class/power_supply/CMB*/uevent > /dev/null 2>&1; then
         BATTERIES=( /sys/class/power_supply/CMB*/uevent )
     else
         echo "No batteries found"
